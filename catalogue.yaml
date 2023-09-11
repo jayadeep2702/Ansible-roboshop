@@ -52,3 +52,25 @@
       src: catalogue.service
       dest: /etc/systemd/system/catalogue.service
 
+  - name: system daemon-reload
+    ansible.builtin.systemd:
+      daemon_reload: true
+
+  - name: copy mongo repo file
+    ansible.builtin.copy:
+      src: mongo.repo
+      dest: /etc/yum.repos.d/mongo.repo
+
+  - name: install mongodb
+    ansible.builtin.yum:
+      name: mongodb-org-shell
+      state: installed
+
+  - name: Load schema
+    ansible.builtin.command: mongo --host mongodb-dev.jdevops72.online < /app/schema/catalogue.js
+
+  - name: restart catalogue
+    ansible.builtin.service:
+      name: catalogue
+      state: restarted
+      enabled: true
